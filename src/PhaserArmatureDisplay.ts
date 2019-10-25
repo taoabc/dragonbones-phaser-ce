@@ -40,7 +40,7 @@ export default class PhaserArmatureDisplay extends Phaser.Group implements drago
    * @inheritDoc
    */
   public constructor() {
-    super(PhaserFactory._game);
+    super(PhaserFactory._game, null);
   }
 
   private _getChildByName(container: Phaser.Group, name: string): PIXI.DisplayObject | null {

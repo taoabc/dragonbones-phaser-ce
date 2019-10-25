@@ -24,8 +24,6 @@
 import * as dragonBones from 'libdragonbones';
 import PhaserSlotDisplay from './PhaserSlotDisplay';
 
-let papaya = null;
-
 /**
  * - The Phaser slot.
  * @version DragonBones 5.6
@@ -53,7 +51,7 @@ export default class PhaserSlot extends dragonBones.Slot {
 
   protected _initDisplay(value: any, isRetain: boolean): void {
     const display = value as PhaserSlotDisplay;
-    display.renderIndex = 0;
+    display._renderIndex = 0;
     // tslint:disable-next-line:no-unused-expression
     isRetain;
   }
@@ -79,7 +77,7 @@ export default class PhaserSlot extends dragonBones.Slot {
     const container = this._armature.display as PhaserArmatureDisplay;
     const prevDisplay = value as PIXI.DisplayObject;
     container.addChild(this._renderDisplay);
-    this._renderDisplay.renderIndex = prevDisplay.renderIndex;
+    this._renderDisplay._renderIndex = prevDisplay._renderIndex;
     container.swapChildren(this._renderDisplay, prevDisplay);
     container.removeChild(prevDisplay);
     this._textureScale = 1.0;
@@ -91,9 +89,9 @@ export default class PhaserSlot extends dragonBones.Slot {
 
   protected _updateZOrder(): void {
     const container = this._armature.display as PhaserArmatureDisplay;
-    if (this._renderDisplay.renderIndex !== this._zOrder) {
-      this._renderDisplay.renderIndex = this._zOrder;
-      container.sort('renderIndex');
+    if (this._renderDisplay._renderIndex !== this._zOrder) {
+      this._renderDisplay._renderIndex = this._zOrder;
+      container.sort('_renderIndex');
     }
   }
   /**
@@ -104,7 +102,7 @@ export default class PhaserSlot extends dragonBones.Slot {
   }
 
   protected _updateBlendMode(): void {
-    if (this._renderDisplay instanceof PIXI.Sprite) {
+    if (this._renderDisplay instanceof Phaser.Image) {
       switch (this._blendMode) {
         case dragonBones.BlendMode.Normal:
           this._renderDisplay.blendMode = PIXI.blendModes.NORMAL;
@@ -153,7 +151,7 @@ export default class PhaserSlot extends dragonBones.Slot {
     const alpha = this._colorTransform.alphaMultiplier * this._globalAlpha;
     this._renderDisplay.alpha = alpha;
 
-    if (this._renderDisplay instanceof PIXI.Sprite) {
+    if (this._renderDisplay instanceof Phaser.Image) {
       // || this._renderDisplay instanceof PIXI.mesh.Mesh
       const color =
         (Math.round(this._colorTransform.redMultiplier * 0xff) << 16) +
@@ -165,6 +163,7 @@ export default class PhaserSlot extends dragonBones.Slot {
   }
 
   protected _updateFrame(): void {
+    if (this._renderDisplay instanceof Phaser.Group) return;
     let currentTextureData = this._textureData as (PhaserTextureData | null);
 
     if (this._displayIndex >= 0 && this._display !== null && currentTextureData !== null) {
